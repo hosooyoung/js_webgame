@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>slingshot</title>
+	<style>
+		div.relative {
+        background-color: black;
+        color: yellow;
+        	}
+	div.relative_1 { 
+        position: fixed;
+        left: 130px;
+        top: 530px;
+        }
+        div.relative_2 { 
+        position: fixed;
+        left: 132px;
+        top: 610px;
+        }
+	</style>
+	<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+	<script type="text/javascript">
+		var sling1x;
+		var sling1y;
+		var sling2x;
+		var sling2y;
+		var shotcount=0;
+		var a_shot=0;
+		var b_shot=0;
+		var round=1;
+		var turn=0;
+		var target_flag1=0;
+		var target_flag2=0;
+		var imgBG = new Image();
+			imgBG.src = "sniper_back.JPG";
+		var clay = new Image();
+			clay.src = "clay.JPG";
+		var func_count=0;
+		var sum1;
+		var sum2;
+		var ball1vx=20;
+		var ball1vy=5;
+		var ball1x=10;
+		var ball1y=200;
+		var ball2vx=-20;
+		var ball2vy=-5;
+		var ball2x=1400;
+		var ball2y=200;
+		var boxwidth=1450;
+		var boxhieght=600;
+		var boxx=20;
+		var boxy=30;
+		var ballrad_target=40;
+		var time=100;
+		var func;
+		//////////////////////////////
+		var cwidth=1500;
+		var cheight=800;
+		var ctx;
+		var canvas1;
+		var everything=[];
+		var tid;
+		var startrockx=200;
+		var startrocky=500;
+		var ballx=startrockx;
+		var bally=startrocky;
+		var ballrad=5;
+		var ballradsq=ballrad*ballrad;
+		var inmotion=false;
+		var horvelocity;
+		var verticalvel1;
+		var verticalvel2;
+		var gravity=0;
+		var chicken=new Image();
+		chicken.src="clay.JPG";
+		var feather=new Image();
+		feather.src="base_single.JPG";
+		var boxboundx=boxwidth+boxx-ballrad_target;
+		var boxboundy=boxhieght+boxy-ballrad_target;
+		var inboxboundx=boxx+ballrad_target;
+		var inboxboundy=boxy+ballrad_target;
+
+		var startTime ;
+		if(func_count==50){
+			var endTime = new Date().getTime();
+		console.log(endTime - startTime);
+		}
+		function Sling(bx,by,s1x,s1y,s2x,s2y,s3x,s3y,stylestring){
+			this.bx=bx;
+			this.by=by;
+			this.s1x=s1x;
+			this.s1y=s1y;
+			this.s2x=s2x;
+			this.s2y=s2y;
+			this.s3x=s3x;
+			this.s3y=s3y;
+			this.strokeStyle=stylestring;
+			this.draw=drawsling;
+			this.moveit=movesling;
+		}
+		function drawsling(){
+			ctx.strokeStyle=this.strokeStyle;
+			ctx.lineWidth=4;
+			ctx.beginPath();
+			ctx.moveTo(this.bx,this.by);
+			ctx.lineTo(this.s1x,this.s1y);
+			ctx.moveTo(this.bx,this.by);
+			ctx.lineTo(this.s2x,this.s2y);
+			ctx.moveTo(this.s1x,this.s1y);
+			ctx.lineTo(this.s2x,this.s2y);
+			ctx.lineTo(this.s3x,this.s3y);
+			ctx.stroke;	
+			//ctx.closePath();
+		}
+		function movesling(dx,dy){
+			this.bx+=dx;
+			this.by+=dy;
+			this.s1x+=dx;
+			this.s1y+=dy;
+			this.s2x+=dx;
+			this.s2y+=dy;
+			this.s3x+=dx;
+			this.s3y+=dy;
+		}
+		var mysling=new Sling(startrockx,startrocky,startrockx+80,startrocky-10,startrockx+80,startrocky+10,startrockx+70,startrocky+180,"rgb(120,20,10)");
+		function Ball(sx,sy,rad,stylestring){
+			this.sx=sx;
+			this.sy=sy;
+			this.rad=rad;
+			this.draw=drawball;
+			this.moveit=moveball;
+			this.fillstyle=stylestring;
+		}
+		function drawball(){
+//			console.log("공글미 ");
+			ctx.fillStyle=this.fillstyle;
+			ctx.beginPath();
+			ctx.arc(this.sx,this.sy,this.rad,0,Math.PI*2,true);
+			ctx.fill();
+			ctx.closePath();
+		}
+		function moveball(dx,dy){
+			this.sx+=dx;
+			this.sy+=dy;
+		}
+		var cball=new Ball(startrockx,startrocky,ballrad,"rgb(250,0,0)");
+		function myrectangle(sx,sy,swidth,sheight,stylestring){
+			this.sx=sx;
+			this.sy=sy;
+			this.swidth=swidth;
+			this.sheight=sheight;
+			this.fillstyle=stylestring;
+			this.draw=drawrects;
+			this.moveit=moveball;
+		}
+		function drawrects(){
+			ctx.fillStyle=this.fillstyle;
+			ctx.fillRect(this.sx,this.sy,this.swidth,this.sheight);
+		}
+		function Picture(sx,sy,swidth,sheight,imga){
+			this.sx=sx;
+			this.sy=sy;
+			this.img=imga;
+			this.swidth=swidth;
+			this.sheight=sheight;
+			this.draw=drawAnImage;
+			this.moveit=moveball;
+		}
+		function drawAnImage(){
+			ctx.drawImage(this.img,this.sx,this.sy,this.swidth,this.sheight);	
+		}
+		var target=new Picture(700,210,209,179,chicken);
+		var ground=new myrectangle(0,370,1200,30,"rgb(10,250,0)");
+		everything.push(mysling);
+		everything.push(cball);
+		function init(){
+			ctx=document.getElementById('canvas').getContext('2d');
+			canvas1=document.getElementById('canvas');
+			canvas1.addEventListener('mousedown',findball,false);
+			canvas1.addEventListener('mousemove',moveit,false);
+			canvas1.addEventListener('mouseup',finish,false);
+			dice();
+			drawall();
+			func=setInterval(drawall,time);
+		}
+		function findball(ev){
+//			console.log("반응 1??");
+			 var mx;
+			 var my;
+			 if(ev.layerX||ev.layerX==0){
+			 	mx=ev.layerX;
+			 	my=ev.layerY;
+			 }
+			 else if(ev.offsetX||ev.offsetX==0){
+			 	mx=ev.offsetX;
+			 	my=ev.offsetY;
+			 }
+			 if(distsq(mx,my,cball.sx,cball.sy)<ballradsq){
+			 	inmotion=true;
+			//	drawall();
+			 }
+			 
+		}
+		function distsq(x1,y1,x2,y2){
+			return (x1-x2)*(x1-x2)+(y1-y2)*(y1-y2);
+		}
+		function moveit(ev){
+//			console.log("반응2");
+			var mx;
+			var my;
+			if(inmotion){
+				if(ev.layerX||ev.layerX==0){
+			 	mx=ev.layerX;
+			 	my=ev.layerY;
+			 	}
+			 	else if(ev.offsetX||ev.offsetX==0){
+			 	mx=ev.offsetX;
+			 	my=ev.offsetY;
+			 	}
+				cball.sx=mx;
+			 	cball.sy=my;
+			 	mysling.bx=mx;
+			 	mysling.by=my;
+			}
+
+		
+		}
+		function finish(ev){
+	//		console.log("반응 3");
+			shotcount++;
+			if(inmotion){
+				inmotion=false;
+				var outofcannon=distsq(mysling.bx,mysling.by,mysling.s1x,mysling.s1y)/700;
+				var angleradians=-Math.atan2(mysling.s1y-mysling.by,mysling.s1x-mysling.bx);
+				horvelocity=outofcannon*Math.cos(angleradians);
+				verticalvel1=-outofcannon*Math.sin(angleradians);
+		
+				tid=setInterval(change,time);
+			}
+		}
+		function drawall(){
+			$('#status').empty();
+			if(turn==0)
+			$('#status').append('&nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; A팀'+round+' 라운드/격발횟수 : '+shotcount+'&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; ※마우스를 드래그하여 발사</br>');
+			if(turn==1)
+			$('#status').append('&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;B팀'+round+' 라운드/격발횟수'+shotcount+'&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp;※마우스를 드래그하여 발사</br>');
+			$('#status').append('&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;총사격수&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ※주의 ! 공을 적당량 당길 것 </br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;A팀 '+a_shot+" : "+b_shot+' B팀&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;※총 3라운드, 각 라운드의 클레이를 모두 적중하는데 사용한 사격 횟수가 적으면 승리');		
+			console.log(shotcount);
+			
+			func_count++;
+			if(cball.sx<=0||cball.sx>=1400||cball.sy<=0||cball.sy>=650){
+				//shotcount++;
+				cball.sx=startrockx;
+				cball.sy=startrocky;
+				horvelocity=0;
+				verticalvel1=0;
+				verticalvel2=0;
+				clearInterval(tid);
+
+
+			}
+			moveandcheck();
+			ctx.beginPath();
+			ctx.clearRect(0,0,cwidth+100,cheight+100);
+			ctx.fillStyle="rgb(250,0,0)";
+			ctx.closePath();	
+			ctx.drawImage(imgBG, 20, 30, 1450,600);
+			ctx.beginPath();
+			if(target_flag1==0)
+			ctx.drawImage(clay,ball1x-40,ball1y-40,80,80);
+			ctx.closePath();
+			ctx.beginPath();
+			if(target_flag2==0)	
+			ctx.drawImage(clay,ball2x-40,ball2y-40,80,80);
+			ctx.closePath();	
+			ctx.fill();
+			ctx.beginPath();
+			ctx.fillStyle="rgb(0,250,250)";
+			if(target_flag1==0)
+			ctx.arc(ball1x,ball1y,ballrad_target,0,Math.PI*2,true);
+			ctx.closePath();	
+			ctx.beginPath();
+			if(target_flag2==0)
+			ctx.arc(ball2x,ball2y,ballrad_target,0,Math.PI*2,true);
+			ctx.closePath();	
+			var i;
+			for (i=0;i<everything.length;i++){
+				everything[i].draw();
+			}
+			ctx.strokeRect(boxx,boxy,boxwidth,boxhieght);			
+		}
+		function change(){
+
+			checktarget();
+			var dx=horvelocity;
+			verticalvel2=verticalvel1+gravity;
+			var dy=(verticalvel1+verticalvel2)*0.5;
+			verticalvel1=verticalvel2;
+			cball.moveit(dx,dy);
+			var bx=cball.sx;
+			var by=cball.sy;
+		}
+
+		///////////////////////////////////////////////////
+		function dice() {
+			sum1 = 1+Math.floor(Math.random()*6);
+			sum2 = Math.floor(Math.random()*6);
+			ball1vx=15+sum1*3;
+			ball1vy=3+sum1*4;
+			ball2vx=-15-sum2*4;
+			ball2vy=-3-sum2*3;
+			ball1y=20+30*sum1;
+			ball2y=20+30*sum2;
+			ball1x=10;
+			ball2x=1400;
+
+		}
+			
+		function moveandcheck(){
+	/*		console.log("1브이엑스 "+ball1vx);
+			console.log("1븨와이 "+ball1vy);
+			console.log(ㅌ"2브이엑스 "+ball2vx);
+			console.log("2븨와이 "+ball2vy);
+	*/
+			var nball1x=ball1x+ball1vx;
+			var nball1y=ball1y+ball1vy;
+			var nball2x=ball2x+ball2vx;
+			var nball2y=ball2y+ball2vy;
+			if(nball1x>boxboundx){
+				ball1vx=-ball1vx;
+				nball1x=boxboundx;
+				}
+			if(nball1x<inboxboundx){
+				nball1x=inboxboundx;
+				ball1vx=-ball1vx;
+				}
+			if(nball1y>boxboundy){
+				nball1y=boxboundy;
+				ball1vy=-ball1vy;	
+				}
+			if(nball1y<inboxboundy){
+				nball1y=inboxboundy;
+				ball1vy=-ball1vy;
+				}
+			if(nball2x>boxboundx){
+				ball2vx=-ball2vx;
+				nball2x=boxboundx;
+				}
+			if(nball2x<inboxboundx){
+				nball2x=inboxboundx;
+				ball2vx=-ball2vx;
+				}
+			
+			if(nball2y>boxboundy){
+				nball2y=boxboundy;
+				ball2vy=-ball2vy;
+				}
+			if(nball2y<inboxboundy){
+				nball2y=inboxboundy;
+				ball2vy=-ball2vy;
+				}
+			ball1x=nball1x;
+			ball1y=nball1y;
+			ball2x=nball2x;
+			ball2y=nball2y;
+			}	
+		function checktarget(){
+			if((cball.sx>=ball1x-ballrad_target)&&(cball.sx<=ball1x+ballrad_target)){
+				if((cball.sy>=ball1y-ballrad_target)&&(cball.sy<=ball1y+ballrad_target)){
+					cball.sx=startrockx;
+					cball.sy=startrocky;
+					horvelocity=0;
+					verticalvel1=0;
+					verticalvel2=0;
+					target_flag1=1;
+				}
+			}
+			if((cball.sx>=ball2x-ballrad_target)&&(cball.sx<=ball2x+ballrad_target)){
+				if((cball.sy>=ball2y-ballrad_target)&&(cball.sy<=ball2y+ballrad_target)){
+					cball.sx=startrockx;
+					cball.sy=startrocky;
+					horvelocity=0;
+					verticalvel1=0;
+					verticalvel2=0;
+					target_flag2=1;
+				}
+			}
+			if(target_flag1==1&&target_flag2==1){
+				clearInterval(drawall);
+				clearInterval(change);
+				
+				if(turn==0){
+					a_shot+=shotcount;
+				}
+				if(turn==1){
+					b_shot+=shotcount;
+				}
+				alert("사격끝!격발 횟수:"+shotcount);
+				round++;
+				if(round==4){
+					turn++;
+					round=1;
+					if(turn==2){
+						if(a_shot>b_shot)
+							alert(a_shot+":"+b_shot+"게임종료 B팀승리")
+						if(a_shot<b_shot)
+							alert(a_shot+":"+b_shot+"게임종료 A팀승리")
+						if(a_shot==b_shot)
+							alert(a_shot+":"+b_shot+"게임종료 무승부")
+						window.location.reload();
+					}
+				}
+				cball.sx=startrockx;
+				cball.sy=startrocky;
+				horvelocity=0;
+				verticalvel1=0;
+				verticalvel2=0;
+				dice();
+				target_flag1=0;
+				target_flag2=0;
+				shotcount=0;
+			}
+		}
+
+	</script>
+</head>
+<div id="status" class="relative"></div>
+<body onLoad = "init();">
+	<canvas id="canvas" width ="1550" height="700">
+		</canvas>
+<!--<div class="relative_1">	
+	<img src='sniper1.jpg' width="50" height="80">
+</div>
+<div class="relative_2">	
+	<img src='sniper2.jpg' width="30" height="70">
+</div>!-->
+
+</body>
+</html>

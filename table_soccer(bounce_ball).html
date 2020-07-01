@@ -1,0 +1,758 @@
+	<!DOCTYPE html>
+	<html>
+	<head>
+		<title>table soccer</title>
+		<style>
+			form{
+				width:330px;
+				margin:20px;
+				background-color:brown;
+				padding:20px;
+
+			}
+		div.relative { 
+        position: fixed;
+        left: 500px;
+        top: 450px;
+        background-color: black;
+        color: yellow;
+      }
+      div.relative_2 { 
+        position: fixed;
+        left: 400px;
+        top: 475px;
+      }
+		</style>
+		<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+		<script type="text/javascript">
+			var goal_a=0;
+			var goal_b=0;
+			var a_skill_1=0;
+			var a_skill_2=0;
+			var b_skill_1=0;
+			var b_skill_2=0;
+			var sum_speed=0;
+			var score_flag=0;
+			var a_score=0;
+			var b_score=0;
+			var bound_count=0;
+			var boxx=220;
+			var boxy=30;
+			var boxwidth=700;
+			var boxwidth_1=200;
+			var boxhieght=400;
+			var ballrad=11;
+			var boxboundx=boxwidth+boxx-ballrad;
+			var boxboundy=boxhieght+boxy-ballrad;
+			var inboxboundx=boxx+ballrad;
+			var inboxboundy=boxy+ballrad;
+			var ballx=560;
+			var bally=60;
+			var ctx;
+			var ballvx=15;
+			var ballvy=8;
+			var scroll_a_1=0;
+			var scroll_a_2=0;
+			var scroll_a_3=0;
+			var scroll_a_4=0;
+			var scroll_b_1=0;
+			var scroll_b_2=0;
+			var scroll_b_3=0;
+			var scroll_b_4=0;
+			var keyPressed = [];
+			var side_a_1_left=300;
+			var side_a_1_right=340;
+			var side_a_2_left=500;
+			var side_a_2_right=540;
+			var side_a_3_left=700;
+			var side_a_3_right=740;
+			//var side_a_4_left=600;
+			//var side_a_4_right=640;
+			var side_b_1_left=400;
+			var side_b_1_right=440;
+			var side_b_2_left=600;
+			var side_b_2_right=640;
+			var side_b_3_left=800;
+			var side_b_3_right=840;
+			//var side_b_4_left=625;
+			//var side_b_4_right=665;
+			var scroll_count_a_1=0;
+			var scroll_count_a_2=0;
+			var scroll_count_a_3=0;
+			var scroll_count_a_4=0;
+			var scroll_count_b_1=0;
+			var scroll_count_b_2=0;
+			var scroll_count_b_3=0;
+			var scroll_count_b_4=0;
+			var imgBG = new Image();
+			imgBG.src = "soccer_field.JPG";	
+			
+			 window.onkeydown = function(e) {
+              switch(e.keyCode) {
+              case 90:
+              		scroll_count_a_1++;
+              		if(scroll_count_a_1<=7&&scroll_count_a_1>=-3)
+                   scroll_a_1=scroll_a_1+5;
+               		else
+               		scroll_count_a_1--;
+                   break;
+              case 65:
+              		scroll_count_a_1--;
+              		if(scroll_count_a_1<=7&&scroll_count_a_1>=-3)
+                   scroll_a_1=scroll_a_1-5;
+               		else
+               		scroll_count_a_1++;
+                   break;
+              case 88:
+              		scroll_count_a_2++;
+              		if(scroll_count_a_2<=7&&scroll_count_a_2>=-3)
+                   scroll_a_2=scroll_a_2+5;
+               		else
+               		scroll_count_a_2--;
+                   break;
+              case 83:
+                  scroll_count_a_2--;
+              		if(scroll_count_a_2<=7&&scroll_count_a_2>=-3)
+                   scroll_a_2=scroll_a_2-5;
+               		else
+               		scroll_count_a_2++;
+                   break;
+              case 67:
+                   scroll_count_a_3++;
+              		if(scroll_count_a_3<=7&&scroll_count_a_3>=-3)
+                   scroll_a_3=scroll_a_3+5;
+               		else
+               		scroll_count_a_3--;
+                   break;
+              case 68:
+                   scroll_count_a_3--;
+              		if(scroll_count_a_3<=7&&scroll_count_a_3>=-3)
+                   scroll_a_3=scroll_a_3-5;
+               		else
+               		scroll_count_a_3++;
+                   break;
+              case 86:
+                    scroll_count_a_4++;
+              		if(scroll_count_a_4<=7&&scroll_count_a_4>=-3)
+                   scroll_a_4=scroll_a_4+5;
+               		else
+               		scroll_count_a_4--;
+                   break;
+              case 70:
+                   scroll_count_a_4--;
+              		if(scroll_count_a_4<=7&&scroll_count_a_4>=-3)
+                   scroll_a_4=scroll_a_4-5;
+               		else
+               		scroll_count_a_4++;
+                   break;
+              case 77:
+              		scroll_count_b_1++;
+              		if(scroll_count_b_1<=7&&scroll_count_b_1>=-3)
+                   scroll_b_1=scroll_b_1+5;
+               		else
+               		scroll_count_b_1--;
+                   break;
+              case 75:
+              		scroll_count_b_1--;
+              		if(scroll_count_b_1<=7&&scroll_count_b_1>=-3)
+                   scroll_b_1=scroll_b_1-5;
+               		else
+               		scroll_count_b_1++;
+                   break;
+              case 188:
+                  scroll_count_b_2++;
+              		if(scroll_count_b_2<=7&&scroll_count_b_2>=-3)
+                   scroll_b_2=scroll_b_2+5;
+               		else
+               		scroll_count_b_2--;
+                   break;
+              case 76:
+                   scroll_count_b_2--;
+              		if(scroll_count_b_2<=7&&scroll_count_b_2>=-3)
+                   scroll_b_2=scroll_b_2-5;
+               		else
+               		scroll_count_b_2++;
+                   break;
+              case 190:
+                   scroll_count_b_3++;
+              		if(scroll_count_b_3<=7&&scroll_count_b_3>=-3)
+                   scroll_b_3=scroll_b_3+5;
+               		else
+               		scroll_count_b_3--;
+                   break;
+
+              case 186:
+                  scroll_count_b_3--;
+              		if(scroll_count_b_3<=7&&scroll_count_b_3>=-3)
+                   scroll_b_3=scroll_b_3-5;
+               		else
+               		scroll_count_b_3++;
+                   break;
+
+              case 191:
+                   scroll_count_b_4++;
+              		if(scroll_count_b_4<=7&&scroll_count_b_4>=-3)
+                   scroll_b_4=scroll_b_4+5;
+               		else
+               		scroll_count_b_4--;
+                   break;
+
+              case 222:
+                   scroll_count_b_4--;
+              		if(scroll_count_b_4<=7&&scroll_count_b_4>=-3)
+                   scroll_b_4=scroll_b_4-5;
+               		else
+               		scroll_count_b_4++;
+                   break;
+  
+
+                   
+               }
+           }
+    	
+
+			function init(){
+				ctx=document.getElementById('canvas').getContext('2d');
+				
+				ctx.lineWidth=ballrad;
+				ctx.fillStyle="rgb(200,0,50)";
+				moveball();
+				setInterval(moveball, 100);
+				
+			}
+			
+			function moveball(){
+				ctx.clearRect(170,100,50,250);
+				ctx.clearRect(925,100,80,250);			
+				if(sum_speed==1){
+				if(ballvx>0)
+				ballvx=ballvx+2;
+				else
+				ballvx=ballvx-2;
+				if(ballvy>0)
+				ballvy=ballvy+2;
+				else
+				ballvy=ballvy-2;
+				sum_speed=0;
+				}
+				
+				console.log(ballvx+"엑스");
+				console.log(ballvy+"와이");
+				$('#score').empty();
+				$('#score').append('A팀점수: '+a_score+'vs B팀점수:'+b_score);
+				ctx.clearRect(boxx,boxy,boxwidth,boxhieght);
+				moveandcheck();
+				ctx.beginPath();
+				ctx.drawImage(imgBG, 220, 30, 700,400);
+				ctx.fillStyle="rgb(200,0,50)";
+				
+				ctx.arc(ballx,bally,ballrad,0,Math.PI*2,true);
+				ctx.fill();
+				ctx.strokeRect(boxx,boxy,boxwidth,boxhieght);
+				
+				ctx.fillStyle="rgb(128,0,128)";
+				ctx.fillRect(300,50+scroll_a_1,40,40);
+				ctx.fillRect(300,150+scroll_a_1,40,40);
+				ctx.fillRect(300,250+scroll_a_1,40,40);
+				ctx.fillRect(300,350+scroll_a_1,40,40);
+				ctx.fillRect(500,50+scroll_a_2,40,40);
+				ctx.fillRect(500,150+scroll_a_2,40,40);
+				ctx.fillRect(500,250+scroll_a_2,40,40);
+				ctx.fillRect(500,350+scroll_a_2,40,40);
+				ctx.fillRect(700,50+scroll_a_3,40,40);
+				ctx.fillRect(700,150+scroll_a_3,40,40);
+				ctx.fillRect(700,250+scroll_a_3,40,40);
+				ctx.fillRect(700,350+scroll_a_3,40,40);
+				
+				ctx.fillStyle="rgb(000,50,200)";
+				ctx.fillRect(400,50+scroll_b_1,40,40);
+				ctx.fillRect(400,150+scroll_b_1,40,40);
+				ctx.fillRect(400,250+scroll_b_1,40,40);
+				ctx.fillRect(400,350+scroll_b_1,40,40);
+				ctx.fillRect(600,50+scroll_b_2,40,40);
+				ctx.fillRect(600,150+scroll_b_2,40,40);
+				ctx.fillRect(600,250+scroll_b_2,40,40);
+				ctx.fillRect(600,350+scroll_b_2,40,40);
+				ctx.fillRect(800,50+scroll_b_3,40,40);
+				ctx.fillRect(800,150+scroll_b_3,40,40);
+				ctx.fillRect(800,250+scroll_b_3,40,40);
+				ctx.fillRect(800,350+scroll_b_3,40,40);
+				
+				ctx.strokeRect(170,(150-b_skill_2+a_skill_1),50,(160-2*a_skill_1+2*b_skill_2));
+				ctx.strokeRect(925,(150-a_skill_2+b_skill_1),50,(160-2*b_skill_1+2*a_skill_2));				
+				ctx.fillStyle="rgb(255,255,255)";
+				ctx.fillRect(210,(156-b_skill_2+a_skill_1),17,(148-2*a_skill_1+2*b_skill_2));
+				ctx.fillRect(915,(156-a_skill_2+b_skill_1),17,(148-2*b_skill_1+2*a_skill_2));				
+				
+
+			}
+			function moveandcheck(){
+				score_flag=0;
+			var inballboundx=ballx+ballrad;
+			var inballboundy=bally+ballrad;
+			var side_a_1_up_1=50+scroll_a_1;
+			var side_a_1_down_1=90+scroll_a_1;
+			var side_a_1_up_2=150+scroll_a_1;
+			var side_a_1_down_2=190+scroll_a_1;
+			var side_a_1_up_3=250+scroll_a_1;
+			var side_a_1_down_3=290+scroll_a_1;
+			var side_a_1_up_4=350+scroll_a_1;
+			var side_a_1_down_4=390+scroll_a_1;
+			//////////////////////////////////
+			var side_a_2_up_1=50+scroll_a_2;
+			var side_a_2_down_1=90+scroll_a_2;
+			var side_a_2_up_2=150+scroll_a_2;
+			var side_a_2_down_2=190+scroll_a_2;
+			var side_a_2_up_3=250+scroll_a_2;
+			var side_a_2_down_3=290+scroll_a_2;
+			var side_a_2_up_4=350+scroll_a_2;
+			var side_a_2_down_4=390+scroll_a_2;
+			////////////////////////////////////////
+			var side_a_3_up_1=50+scroll_a_3;
+			var side_a_3_down_1=90+scroll_a_3;
+			var side_a_3_up_2=150+scroll_a_3;
+			var side_a_3_down_2=190+scroll_a_3;
+			var side_a_3_up_3=250+scroll_a_3;
+			var side_a_3_down_3=290+scroll_a_3;
+			var side_a_3_up_4=350+scroll_a_3;
+			var side_a_3_down_4=390+scroll_a_3;
+			//////////////////////////////////////////
+		
+			
+			var side_b_1_up_1=50+scroll_b_1;
+			var side_b_1_down_1=90+scroll_b_1;
+			var side_b_1_up_2=150+scroll_b_1;
+			var side_b_1_down_2=190+scroll_b_1;
+			var side_b_1_up_3=250+scroll_b_1;
+			var side_b_1_down_3=290+scroll_b_1;
+			var side_b_1_up_4=350+scroll_b_1;
+			var side_b_1_down_4=390+scroll_b_1;
+			/////////////////////////////////////////////////
+			var side_b_2_up_1=50+scroll_b_2;
+			var side_b_2_down_1=90+scroll_b_2;
+			var side_b_2_up_2=150+scroll_b_2;
+			var side_b_2_down_2=190+scroll_b_2;
+			var side_b_2_up_3=250+scroll_b_2;
+			var side_b_2_down_3=290+scroll_b_2;
+			var side_b_2_up_4=350+scroll_b_2;
+			var side_b_2_down_4=390+scroll_b_2;
+			
+			//////////////////////////////////////////////////
+			var side_b_3_up_1=50+scroll_b_3;
+			var side_b_3_down_1=90+scroll_b_3;
+			var side_b_3_up_2=150+scroll_b_3;
+			var side_b_3_down_2=190+scroll_b_3;
+			var side_b_3_up_3=250+scroll_b_3;
+			var side_b_3_down_3=290+scroll_b_3;
+			var side_b_3_up_4=350+scroll_b_3;
+			var side_b_3_down_4=390+scroll_b_3;
+			/////////////////////////////////////////////////
+			/////////////////////////////////////////////////
+				var nballx=ballx+ballvx;
+				var nbally=bally+ballvy;
+				console.log("nballx"+nballx);
+				console.log("nbally"+nbally);
+				console.log("boxboundy"+boxboundy);
+				console.log("inboxboundy"+inboxboundy);
+				
+				console.log("boxboundx"+boxboundx);
+				console.log("inboxboundx"+inboxboundx);
+				
+				if(nballx>boxboundx){
+					if(bally<=(150-a_skill_2+b_skill_1)||bally>=(310-b_skill_1+a_skill_2)){
+					
+					ballvx=-ballvx;
+					nballx=boxboundx;
+				
+				}
+				}
+				if(nballx>boxboundx&&bally>(150-a_skill_2+b_skill_1)&&bally<(310-b_skill_1+a_skill_2)){
+						goal_a++;
+						if(goal_a>3){
+						a_score++;
+						score_flag=2;
+						alert("a팀 득점!");
+						goal_a=0;
+						scoreing();
+						}
+					}
+				if(nballx<inboxboundx){
+					if(bally<=(150-b_skill_2+a_skill_1)||bally>=(310-a_skill_1+b_skill_2)){
+					
+					
+					nballx=inboxboundx;
+					ballvx=-ballvx;
+				
+					}	
+				}
+				if(nballx<inboxboundx&&bally>(150-b_skill_2+a_skill_1)&&bally<(310-a_skill_1+b_skill_2)){
+					goal_b++;
+					if(goal_b>3){
+					b_score++;
+					score_flag=1;
+					alert("b팀 득점!");
+					goal_b=0;
+					scoreing();
+					}
+				}
+
+				if(nbally>boxboundy){
+					nbally=boxboundy;
+					ballvy=-ballvy;
+					console.log("3333333333333333333333아랫벽");
+				}
+				if(nbally<inboxboundy){
+					nbally=inboxboundy;
+					ballvy=-ballvy;
+					console.log("444444444444윗벽");
+				}
+				
+				// A팀  A팀  A팀 ////////////////////// 
+				////////////벽 1////////////////
+				//////좌좌/////////////
+				if(ballvx>0&&ballx+ballrad>side_a_1_left&&ballx-ballrad<side_a_1_left){
+					if(bally>=side_a_1_up_1&&bally<=side_a_1_down_1)
+						ballvx=-ballvx;
+					if(bally>=side_a_1_up_2&&bally<=side_a_1_down_2)
+						ballvx=-ballvx;
+					if(bally>=side_a_1_up_3&&bally<=side_a_1_down_3)
+						ballvx=-ballvx;
+					if(bally>=side_a_1_up_4&&bally<=side_a_1_down_4)
+						ballvx=-ballvx;
+				}
+				////////우웅우////////////
+				if(ballvx<0&&ballx-ballrad<side_a_1_right&&ballx+ballrad>side_a_1_right){
+					if(bally>=side_a_1_up_1&&bally<=side_a_1_down_1)
+						ballvx=-ballvx;
+					if(bally>=side_a_1_up_2&&bally<=side_a_1_down_2)
+						ballvx=-ballvx;
+					if(bally>=side_a_1_up_3&&bally<=side_a_1_down_3)
+						ballvx=-ballvx;
+					if(bally>=side_a_1_up_4&&bally<=side_a_1_down_4)
+						ballvx=-ballvx;	
+				}
+				//////////상상상 /////////////
+				if(ballvy>0&&bally+ballrad>side_a_1_up_1&&bally-ballrad<side_a_1_up_1&&ballx>side_a_1_left&&ballx<side_a_1_right)
+					ballvy=-ballvy;
+				if(ballvy>0&&bally+ballrad>side_a_1_up_2&&bally-ballrad<side_a_1_up_2&&ballx>side_a_1_left&&ballx<side_a_1_right)
+					ballvy=-ballvy;
+				if(ballvy>0&&bally+ballrad>side_a_1_up_3&&bally-ballrad<side_a_1_up_3&&ballx>side_a_1_left&&ballx<side_a_1_right)
+					ballvy=-ballvy;
+				if(ballvy>0&&bally+ballrad>side_a_1_up_4&&bally-ballrad<side_a_1_up_4&&ballx>side_a_1_left&&ballx<side_a_1_right)
+					ballvy=-ballvy;
+				/////하///////////////
+				if(ballvy<0&&bally-ballrad<side_a_1_down_1&&bally+ballrad>side_a_1_down_1&&ballx>side_a_1_left&&ballx<side_a_1_right)
+					ballvy=-ballvy;
+				if(ballvy<0&&bally-ballrad<side_a_1_down_2&&bally+ballrad>side_a_1_down_2&&ballx>side_a_1_left&&ballx<side_a_1_right)
+					ballvy=-ballvy;
+				if(ballvy<0&&bally-ballrad<side_a_1_down_3&&bally+ballrad>side_a_1_down_3&&ballx>side_a_1_left&&ballx<side_a_1_right)
+					ballvy=-ballvy;
+				if(ballvy<0&&bally-ballrad<side_a_1_down_4&&bally+ballrad>side_a_1_down_4&&ballx>side_a_1_left&&ballx<side_a_1_right)
+					ballvy=-ballvy;
+				/////////여기까지 a팀 1열
+				////////////벽 2////////////////
+				//////좌좌좌좌////////////////
+				if(ballvx>0&&ballx+ballrad>side_a_2_left&&ballx-ballrad<side_a_2_left){
+					if(bally>=side_a_2_up_1&&bally<=side_a_2_down_1)
+						ballvx=-ballvx;
+					if(bally>=side_a_2_up_2&&bally<=side_a_2_down_2)
+						ballvx=-ballvx;
+					if(bally>=side_a_2_up_3&&bally<=side_a_2_down_3)
+						ballvx=-ballvx;
+					if(bally>=side_a_2_up_4&&bally<=side_a_2_down_4)
+						ballvx=-ballvx;
+				}
+				/////////우우우////////
+				if(ballvx<0&&ballx-ballrad<side_a_2_right&&ballx+ballrad>side_a_2_right){
+					if(bally>=side_a_2_up_1&&bally<=side_a_2_down_1)
+						ballvx=-ballvx;
+					if(bally>=side_a_2_up_2&&bally<=side_a_2_down_2)
+						ballvx=-ballvx;
+					if(bally>=side_a_2_up_3&&bally<=side_a_2_down_3)
+						ballvx=-ballvx;
+					if(bally>=side_a_2_up_4&&bally<=side_a_2_down_4)
+						ballvx=-ballvx;	
+				}
+				////////상상상 //////////////
+				if(ballvy>0&&bally+ballrad>side_a_2_up_1&&bally-ballrad<side_a_2_up_1&&ballx>side_a_2_left&&ballx<side_a_2_right)
+					ballvy=-ballvy;
+				if(ballvy>0&&bally+ballrad>side_a_2_up_2&&bally-ballrad<side_a_2_up_2&&ballx>side_a_2_left&&ballx<side_a_2_right)
+					ballvy=-ballvy;
+				if(ballvy>0&&bally+ballrad>side_a_2_up_3&&bally-ballrad<side_a_2_up_3&&ballx>side_a_2_left&&ballx<side_a_2_right)
+					ballvy=-ballvy;
+				if(ballvy>0&&bally+ballrad>side_a_2_up_4&&bally-ballrad<side_a_2_up_4&&ballx>side_a_2_left&&ballx<side_a_2_right)
+					ballvy=-ballvy;
+				//////////////하/////////
+				if(ballvy<0&&bally-ballrad<side_a_2_down_1&&bally+ballrad>side_a_2_down_1&&ballx>side_a_2_left&&ballx<side_a_2_right)
+					ballvy=-ballvy;
+				if(ballvy<0&&bally-ballrad<side_a_2_down_2&&bally+ballrad>side_a_2_down_2&&ballx>side_a_2_left&&ballx<side_a_2_right)
+					ballvy=-ballvy;
+				if(ballvy<0&&bally-ballrad<side_a_2_down_3&&bally+ballrad>side_a_2_down_3&&ballx>side_a_2_left&&ballx<side_a_2_right)
+					ballvy=-ballvy;
+				if(ballvy<0&&bally-ballrad<side_a_2_down_4&&bally+ballrad>side_a_2_down_4&&ballx>side_a_2_left&&ballx<side_a_2_right)
+					ballvy=-ballvy;
+				////여기까지 a팀 2열
+				////////////벽 3////////////////
+				//////좌좌////
+				if(ballvx>0&&ballx+ballrad>side_a_3_left&&ballx-ballrad<side_a_3_left){
+					if(bally>=side_a_3_up_1&&bally<=side_a_3_down_1)
+						ballvx=-ballvx;
+					if(bally>=side_a_3_up_2&&bally<=side_a_3_down_2)
+						ballvx=-ballvx;
+					if(bally>=side_a_3_up_3&&bally<=side_a_3_down_3)
+						ballvx=-ballvx;
+					if(bally>=side_a_3_up_4&&bally<=side_a_3_down_4)
+						ballvx=-ballvx;
+				}
+				/////우우우//////
+				if(ballvx<0&&ballx-ballrad<side_a_3_right&&ballx+ballrad>side_a_3_right){
+					if(bally>=side_a_3_up_1&&bally<=side_a_3_down_1)
+						ballvx=-ballvx;
+					if(bally>=side_a_3_up_2&&bally<=side_a_3_down_2)
+						ballvx=-ballvx;
+					if(bally>=side_a_3_up_3&&bally<=side_a_3_down_3)
+						ballvx=-ballvx;
+					if(bally>=side_a_3_up_4&&bally<=side_a_3_down_4)
+						ballvx=-ballvx;	
+				}
+				//////////상상상 ///////
+				if(ballvy>0&&bally+ballrad>side_a_3_up_1&&bally-ballrad<side_a_3_up_1&&ballx>side_a_3_left&&ballx<side_a_3_right)
+					ballvy=-ballvy;
+				if(ballvy>0&&bally+ballrad>side_a_3_up_2&&bally-ballrad<side_a_3_up_2&&ballx>side_a_3_left&&ballx<side_a_3_right)
+					ballvy=-ballvy;
+				if(ballvy>0&&bally+ballrad>side_a_3_up_3&&bally-ballrad<side_a_3_up_3&&ballx>side_a_3_left&&ballx<side_a_3_right)
+					ballvy=-ballvy;
+				if(ballvy>0&&bally+ballrad>side_a_3_up_4&&bally-ballrad<side_a_3_up_4&&ballx>side_a_3_left&&ballx<side_a_3_right)
+					ballvy=-ballvy;
+				///////하////////////////////////
+				if(ballvy<0&&bally-ballrad<side_a_3_down_1&&bally+ballrad>side_a_3_down_1&&ballx>side_a_3_left&&ballx<side_a_3_right)
+					ballvy=-ballvy;
+				if(ballvy<0&&bally-ballrad<side_a_3_down_2&&bally+ballrad>side_a_3_down_2&&ballx>side_a_3_left&&ballx<side_a_3_right)
+					ballvy=-ballvy;
+				if(ballvy<0&&bally-ballrad<side_a_3_down_3&&bally+ballrad>side_a_3_down_3&&ballx>side_a_3_left&&ballx<side_a_3_right)
+					ballvy=-ballvy;
+				if(ballvy<0&&bally-ballrad<side_a_3_down_4&&bally+ballrad>side_a_3_down_4&&ballx>side_a_3_left&&ballx<side_a_3_right)
+					ballvy=-ballvy;
+				///여기까지 a팀 3열
+				
+				// A팀  A팀  A팀/////////
+				
+
+
+
+				// B팀  B팀  B팀  /////////
+				////////////벽 1////////////////
+				//////좌좌좌/////
+				if(ballvx>0&&ballx+ballrad>side_b_1_left&&ballx-ballrad<side_b_1_left){
+					if(bally>=side_b_1_up_1&&bally<=side_b_1_down_1)
+						ballvx=-ballvx;
+					if(bally>=side_b_1_up_2&&bally<=side_b_1_down_2)
+						ballvx=-ballvx;
+					if(bally>=side_b_1_up_3&&bally<=side_b_1_down_3)
+						ballvx=-ballvx;
+					if(bally>=side_b_1_up_4&&bally<=side_b_1_down_4)
+						ballvx=-ballvx;
+				}
+				/////우우우////////
+				if(ballvx<0&&ballx-ballrad<side_b_1_right&&ballx+ballrad>side_b_1_right){
+					if(bally>=side_b_1_up_1&&bally<=side_b_1_down_1)
+						ballvx=-ballvx;
+					if(bally>=side_b_1_up_2&&bally<=side_b_1_down_2)
+						ballvx=-ballvx;
+					if(bally>=side_b_1_up_3&&bally<=side_b_1_down_3)
+						ballvx=-ballvx;
+					if(bally>=side_b_1_up_4&&bally<=side_b_1_down_4)
+						ballvx=-ballvx;	
+				}
+				////////상상상 ////////////
+				if(ballvy>0&&bally+ballrad>side_b_1_up_1&&bally-ballrad<side_b_1_up_1&&ballx>side_b_1_left&&ballx<side_b_1_right)
+					ballvy=-ballvy;
+				if(ballvy>0&&bally+ballrad>side_b_1_up_2&&bally-ballrad<side_b_1_up_2&&ballx>side_b_1_left&&ballx<side_b_1_right)
+					ballvy=-ballvy;
+				if(ballvy>0&&bally+ballrad>side_b_1_up_3&&bally-ballrad<side_b_1_up_3&&ballx>side_b_1_left&&ballx<side_b_1_right)
+					ballvy=-ballvy;
+				if(ballvy>0&&bally+ballrad>side_b_1_up_4&&bally-ballrad<side_b_1_up_4&&ballx>side_b_1_left&&ballx<side_b_1_right)
+					ballvy=-ballvy;
+				/////////하////
+				if(ballvy<0&&bally-ballrad<side_b_1_down_1&&bally+ballrad>side_b_1_down_1&&ballx>side_b_1_left&&ballx<side_b_1_right)
+					ballvy=-ballvy;
+				if(ballvy<0&&bally-ballrad<side_b_1_down_2&&bally+ballrad>side_b_1_down_2&&ballx>side_b_1_left&&ballx<side_b_1_right)
+					ballvy=-ballvy;
+				if(ballvy<0&&bally-ballrad<side_b_1_down_3&&bally+ballrad>side_b_1_down_3&&ballx>side_b_1_left&&ballx<side_b_1_right)
+					ballvy=-ballvy;
+				if(ballvy<0&&bally-ballrad<side_b_1_down_4&&bally+ballrad>side_b_1_down_4&&ballx>side_b_1_left&&ballx<side_b_1_right)
+					ballvy=-ballvy;
+				///여기까지 b팀 1열
+				////////////벽 2////////////////
+				//////좌좌///
+				if(ballvx>0&&ballx+ballrad>side_b_2_left&&ballx-ballrad<side_b_2_left){
+					if(bally>=side_b_2_up_1&&bally<=side_b_2_down_1)
+						ballvx=-ballvx;
+					if(bally>=side_b_2_up_2&&bally<=side_b_2_down_2)
+						ballvx=-ballvx;
+					if(bally>=side_b_2_up_3&&bally<=side_b_2_down_3)
+						ballvx=-ballvx;
+					if(bally>=side_b_2_up_4&&bally<=side_b_2_down_4)
+						ballvx=-ballvx;
+				}
+				////////////우우//////
+				if(ballvx<0&&ballx-ballrad<side_b_2_right&&ballx+ballrad>side_b_2_right){
+					if(bally>=side_b_2_up_1&&bally<=side_b_2_down_1)
+						ballvx=-ballvx;
+					if(bally>=side_b_2_up_2&&bally<=side_b_2_down_2)
+						ballvx=-ballvx;
+					if(bally>=side_b_2_up_3&&bally<=side_b_2_down_3)
+						ballvx=-ballvx;
+					if(bally>=side_b_2_up_4&&bally<=side_b_2_down_4)
+						ballvx=-ballvx;	
+				}
+				//////////상상상 ///////////
+				if(ballvy>0&&bally+ballrad>side_b_2_up_1&&bally-ballrad<side_b_2_up_1&&ballx>side_b_2_left&&ballx<side_b_2_right)
+					ballvy=-ballvy;
+				if(ballvy>0&&bally+ballrad>side_b_2_up_2&&bally-ballrad<side_b_2_up_2&&ballx>side_b_2_left&&ballx<side_b_2_right)
+					ballvy=-ballvy;
+				if(ballvy>0&&bally+ballrad>side_b_2_up_3&&bally-ballrad<side_b_2_up_3&&ballx>side_b_2_left&&ballx<side_b_2_right)
+					ballvy=-ballvy;
+				if(ballvy>0&&bally+ballrad>side_b_2_up_4&&bally-ballrad<side_b_2_up_4&&ballx>side_b_2_left&&ballx<side_b_2_right)
+					ballvy=-ballvy;
+				///////하///////////
+				if(ballvy<0&&bally-ballrad<side_b_2_down_1&&bally+ballrad>side_b_2_down_1&&ballx>side_b_2_left&&ballx<side_b_2_right)
+					ballvy=-ballvy;
+				if(ballvy<0&&bally-ballrad<side_b_2_down_2&&bally+ballrad>side_b_2_down_2&&ballx>side_b_2_left&&ballx<side_b_2_right)
+					ballvy=-ballvy;
+				if(ballvy<0&&bally-ballrad<side_b_2_down_3&&bally+ballrad>side_b_2_down_3&&ballx>side_b_2_left&&ballx<side_b_2_right)
+					ballvy=-ballvy;
+				if(ballvy<0&&bally-ballrad<side_b_2_down_4&&bally+ballrad>side_b_2_down_4&&ballx>side_b_2_left&&ballx<side_b_2_right)
+					ballvy=-ballvy;
+				///여기까지 b팀 2열
+				////////////벽 3////////////////
+				//////좌좌좌좌좌///
+				if(ballvx>0&&ballx+ballrad>side_b_3_left&&ballx-ballrad<side_b_3_left){
+					if(bally>=side_b_3_up_1&&bally<=side_b_3_down_1)
+						ballvx=-ballvx;
+					if(bally>=side_b_3_up_2&&bally<=side_b_3_down_2)
+						ballvx=-ballvx;
+					if(bally>=side_b_3_up_3&&bally<=side_b_3_down_3)
+						ballvx=-ballvx;
+					if(bally>=side_b_3_up_4&&bally<=side_b_3_down_4)
+						ballvx=-ballvx;
+				}
+				//////우우우////////
+				if(ballvx<0&&ballx-ballrad<side_b_3_right&&ballx+ballrad>side_b_3_right){
+					if(bally>=side_b_3_up_1&&bally<=side_b_3_down_1)
+						ballvx=-ballvx;
+					if(bally>=side_b_3_up_2&&bally<=side_b_3_down_2)
+						ballvx=-ballvx;
+					if(bally>=side_b_3_up_3&&bally<=side_b_3_down_3)
+						ballvx=-ballvx;
+					if(bally>=side_b_3_up_4&&bally<=side_b_3_down_4)
+						ballvx=-ballvx;	
+				}
+				///상상상 ////////
+				if(ballvy>0&&bally+ballrad>side_b_3_up_1&&bally-ballrad<side_b_3_up_1&&ballx>side_b_3_left&&ballx<side_b_3_right)
+					ballvy=-ballvy;
+				if(ballvy>0&&bally+ballrad>side_b_3_up_2&&bally-ballrad<side_b_3_up_2&&ballx>side_b_3_left&&ballx<side_b_3_right)
+					ballvy=-ballvy;
+				if(ballvy>0&&bally+ballrad>side_b_3_up_3&&bally-ballrad<side_b_3_up_3&&ballx>side_b_3_left&&ballx<side_b_3_right)
+					ballvy=-ballvy;
+				if(ballvy>0&&bally+ballrad>side_b_3_up_4&&bally-ballrad<side_b_3_up_4&&ballx>side_b_3_left&&ballx<side_b_3_right)
+					ballvy=-ballvy;
+				///////////하////
+				if(ballvy<0&&bally-ballrad<side_b_3_down_1&&bally+ballrad>side_b_3_down_1&&ballx>side_b_3_left&&ballx<side_b_3_right)
+					ballvy=-ballvy;
+				if(ballvy<0&&bally-ballrad<side_b_3_down_2&&bally+ballrad>side_b_3_down_2&&ballx>side_b_3_left&&ballx<side_b_3_right)
+					ballvy=-ballvy;
+				if(ballvy<0&&bally-ballrad<side_b_3_down_3&&bally+ballrad>side_b_3_down_3&&ballx>side_b_3_left&&ballx<side_b_3_right)
+					ballvy=-ballvy;
+				if(ballvy<0&&bally-ballrad<side_b_3_down_4&&bally+ballrad>side_b_3_down_4&&ballx>side_b_3_left&&ballx<side_b_3_right)
+					ballvy=-ballvy;
+				///여기까지 b팀 3열
+				// B팀  B팀  B팀 ////////
+				if(score_flag==0){
+				ballx=nballx;
+				bally=nbally;
+				}
+				if(score_flag==1){
+					ballx=560;
+					bally=60;
+					score_flag=0;
+					sum_speed=1;
+					moveball();
+
+				}
+				if(score_flag==2){
+					ballx=560;
+					bally=60;
+					score_flag=0;
+					sum_speed=1;
+					moveball();
+
+				}
+
+			}
+			function change(){
+				ballvx=Number(f.hv.value);
+				ballvy=Number(f.vv.value);
+				console.log(ballvx);
+				console.log(ballvy);
+				return false;
+			}
+			function scoreing(){
+				if(a_score==3){
+					alert("A팀 승리!");
+					a_score=0;
+					b_score=0;
+					ballvx=15;
+					ballvy=8;
+					window.location.reload();
+					}
+				if(b_score==3){
+					alert("B팀 승리!");
+					a_score=0;
+					b_score=0;
+					ballvx=15;
+					ballvy=8;
+					window.location.reload();
+					}
+				if(score_flag==2&&a_score<3){
+					var a_input=prompt("A득점!기술을 선택하실 수 있습니다. 1: 내골대줄이기 2:상대골대 키우기");
+					ctx.clearRect(170,100,50,250);
+					ctx.clearRect(925,100,80,250);				
+				
+					if(a_input==1){
+						a_skill_1=a_skill_1+10;
+					}
+					if(a_input==2)
+						a_skill_2=a_skill_2+10;
+				}
+				if(score_flag==1&&b_score<3){
+					var b_input=prompt("B득점!기술을 선택하실 수 있습니다. 1: 내골대줄이기 2:상대골대 키우기");
+						
+				
+					if(b_input==1){
+						b_skill_1=b_skill_1+10;
+					}
+					if(b_input==2)
+						b_skill_2=b_skill_2+10;
+					}
+
+			}
+			
+		</script>
+	</head>
+	<body onLoad = "init();">
+		<canvas id="canvas" width ="1150" height="500">
+		</canvas>
+		<br/>
+		<div id="score" class="relative" >   A팀 점수:0  vs B팀 점수:0    </div>
+		<div class="relative_2">
+	<form name="f" id="f" onSubmit="return change();">
+		수평속도<input name="hv" id="hv" value="15" type="number" min="-50" max="50" />
+		<br>
+		수직속도<input name="vv" id="vv" value="10" type="number" min="-50" max="50" />
+		<input type= "submit" value="변경" />
+	</form>
+	<p>플레이어 1 : a, s, d, z, x, c    플레이어 2 : k, l, ;, m, <, >  </p><br/>
+ 	</div>
+ 	</body>
+	</html>

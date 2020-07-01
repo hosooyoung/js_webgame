@@ -1,0 +1,854 @@
+	<html> 
+<head>
+<title>BASEBALL</title>
+<style type="text/css">
+		 div.relative { 
+        position: fixed;
+        left: 1000px;
+        top: 270px;
+      }
+      	 div.relative_2 { 
+        position: fixed;
+        left: 1200px;
+        top: 635px;
+      }
+       div.relative_3 { 
+        position: fixed;
+        left: 1100px;
+        top: 620px;
+      }
+        div.relative_4 { 
+        position: fixed;
+        left: 1250px;
+        top: 00px;
+      }
+      div.relative_5 { 
+        position: fixed;
+        left: 0px;
+        top: 0px;
+      }
+      div.relative_6 { 
+        position: fixed;
+        left: 750px;
+        top: 550px;
+      }
+      div.relative_7 { 
+        position: fixed;
+        left: 500px;
+        top: 500px;
+
+      }
+      div.relative_8 { 
+        position: fixed;
+        left: 1135px;
+        top: 625px;
+      }
+      div.relative_9 { 
+        position: fixed;
+        left: 1105px;
+        top: 657px;
+      }
+      div.relative_10 { 
+        position: fixed;
+        left: 1168px;
+        top: 657px;
+      }
+
+	div-a,div-b {
+        float: left;
+        height: 500px;
+    	}/*
+    	div-back {
+      position:relative;
+      z-index:1;
+      }*//*
+      div-back_1:after {
+      background-image:url('RYU.JPG');
+      top:0;
+      left:0;
+      position:absolute;
+      background-size:100%;
+      opacity:0.8!important;
+      filter:alpha(opacity=50);
+      z-index:-1;
+      content:"";
+      width:100%;
+      height:100%; 
+   }*/
+   /*
+   div-back_2:after {
+      background-image:url('SHOT.JPG');
+      top:0;
+      left:0;
+      position:absolute;
+      background-size:100%;
+      opacity:0.8!important;
+      filter:alpha(opacity=50);
+      z-index:-1;
+      content:"";
+      width:100%;
+      height:100%;
+   }*/
+    	</style>
+    	<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script type="text/javascript">
+
+
+var fourth_bat_count_home=3;
+var fourth_bat_count_away=3;
+var fourth_bat_use=0;
+var magu_count_home=3;
+var magu_count_away=3;
+var magu_count=0;
+var magu_over=0;
+var fourth_bat_count=0;
+var score=0;
+var tusu = new Array(12);
+var hit =0;
+var turn=0;
+var out_count=0;
+var square_1;
+var square_2;
+var square_3;
+var home_1=0;
+var home_2=0;
+var home_3=0;
+var home_4=0;
+var home_5=0;
+var home_tot=0;
+var away_1=0;
+var away_2=0;
+var away_3=0;
+var away_4=0;
+var away_5=0;
+var away_tot=0;
+var what_shot="";
+var strike=0;
+var throw_sel= new Array(3);
+	tusu[0]=0;
+tusu[1]=0;
+tusu[2]=0;
+tusu[3]=0;
+tusu[4]=0;
+tusu[5]=0;
+tusu[6]=0;
+tusu[7]=0;
+tusu[8]=0;
+tusu[9]=0;
+tusu[10]=0;
+tusu[11]=0;
+var tusu_count=0;
+	var cwidth = 400;
+	var cheight = 300;
+	var dicex = 50;
+	var dicey = 50;
+	var dicewidth = 100;
+	var diceheight = 100;
+	var dotrad = 6;
+	var ctx;
+	var dx;
+	var dy;
+	var firstturn = true;
+	var point;
+function tusudice() {
+	console.log("진입1");
+	var sum;
+	var ch = 1+Math.floor(Math.random()*6);
+	sum = ch;
+	dx = dicex;
+	dy = dicey;
+	drawface(ch);
+	dx = dicex + 150;
+	ch=1 + Math.floor(Math.random()*6);
+	sum += ch;
+	drawface(ch);
+	console.log(sum);
+		
+	for(var i=0;i<=3;i++){
+		if(throw_sel[i]==sum){
+			hit=1;
+			break;
+		}
+	}	
+	if(hit==1&&fourth_bat_use==0){
+		console.log(sum+"eeee");
+		if(sum==2||sum==12){
+			console.log("홈런");
+			what_shot="홈런";
+			strike=0;
+			base(3);
+		}
+		 if(sum==10||sum==4||sum==3||sum==11){
+			console.log("이루타");
+			what_shot="이루타";
+			strike=0;
+			base(2);
+		}
+		if(sum==6||sum==7||sum==8||sum==9||sum==5){
+			console.log("안타");
+			what_shot="안타";
+			strike=0;
+			base(1);
+		}
+	hit=0;
+	tusu_count=0;
+	}
+	else if(hit==1&&fourth_bat_use==1){
+		what_shot="홈런";
+		strike=0;
+		base(3);
+	}
+	else{
+		console.log("아웃");
+		what_shot="스트라이크";
+		strike++;
+		if(strike>=3){
+			base(0);
+			strike=0;
+		}
+
+	}
+	
+	hit=0;
+	tusu_count=0;
+	for(var i=0;i<=11;i++)
+		tusu[i]=0;
+
+	var sushi='';
+	if(turn==0)
+		sushi='1회초 home팀 공격';
+	else if(turn==1)
+		sushi='1회말 away팀 공격';
+	else if(turn==2)
+		sushi='2회초 home팀 공격';
+	else if(turn==3)
+		sushi='2회말 away팀 공격';
+	else if(turn==4)
+		sushi='3회초 home팀 공격';
+	else if(turn==5)
+		sushi='3회말 away팀 공격';
+	else if(turn==6)
+		sushi='4회초 home팀 공격';
+	else if(turn==7)
+		sushi='4회말 away팀 공격';
+	else if(turn==8)
+		sushi='5회초 home팀 공격';
+	else if(turn==9)
+		sushi='5회말 away팀 공격';
+
+	$('#status').empty();
+	$('#status').append('<table border="3" style="font-size:1em; background-color: white;"><tr><td>'+sushi+'</td><td>'+strike+'S</td></tr><tr><td>타격결과</td><td>'+what_shot+'</td></tr><tr><td>아웃카운트</td><td>'+out_count+'out</td></tr></table>');
+
+	if(turn%2==0||turn==0){
+		magu_count=magu_count_away;
+		console.log("남은마구갯수"+magu_count);
+	}
+	else{
+		magu_count=magu_count_home;
+		console.log("남은마구갯수"+magu_count);
+	}
+	if(magu_count<=0){
+		magu_count=0;
+		magu_over=1;
+	}
+	$("#body").css({"background":"url(RYU.JPG)"});
+   
+	$('#target').empty();
+	$('#target').append('<table border="3" width="150" height="200" style="font-size: 2em; color: white;"><tr><td><input type=button style="width:30pt;height:30pt; background-color: rgba( 255, 255, 255, 0.5 );" value="★x'+magu_count+'" id="1"></td><td><input type=button style="width:30pt;height:30pt; background-color: rgba( 255, 255, 255, 0.5 );" value="2" id="2"></td><td><input type=button style="width:30pt;height:30pt; background-color: rgba( 255, 255, 255, 0.5 );" value="3" id="3"></td></tr><tr><td><input type=button style="width:30pt;height:30pt; background-color: rgba( 255, 255, 255, 0.5 );" value="4" id="4"></td><td><input type=button style="width:30pt;height:30pt; background-color: rgba( 255, 255, 255, 0.5 );" value="5" id="5"></td><td><input type=button style="width:30pt;height:30pt; background-color: rgba( 255, 255, 255, 0.5 );" value="6" id="6"></td></tr><tr><td><input type=button style="width:30pt;height:30pt; background-color: rgba( 255, 255, 255, 0.5 );" value="7" id="7"></td><td><input type=button style="width:30pt;height:30pt; background-color: rgba( 255, 255, 255, 0.5 );" value="8" id="8"></td><td><input type=button style="width:30pt;height:30pt; background-color: rgba( 255, 255, 255, 0.5 );" value="9" id="9"></td></tr><tr><td><input type=button style="width:30pt;height:30pt; background-color: rgba( 255, 255, 255, 0.5 );" value="10" id="10"></td><td><input type=button style="width:30pt;height:30pt; background-color: rgba( 255, 255, 255, 0.5 );" value="11" id="11"></td><td><input type=button style="width:30pt;height:30pt; background-color: rgba( 255, 255, 255, 0.5 );" value="12" id="12"></td></tr></table>').ready(function(){
+		$('#1').on('click',function(){
+                for(var i=0;i<=11;i++)
+                	tusu[i]=0;
+                if(magu_count>=0&&magu_over==0){
+                tusu_count=tusu_count+3;
+            }
+             magu_count=magu_count-1;
+            if(turn%2==0||turn==0)
+            	magu_count_away=magu_count;
+            else
+            	magu_count_home=magu_count;
+
+
+      });
+      	   $('#2').on('click',function(){
+                tusu[1]=1;
+                tusu_count++;
+                if(tusu_count>=4){
+                	console.log("선택끝");
+                	thrower_sel();
+                }
+      });
+         $('#3').on('click',function(){
+                tusu[2]=1;
+                tusu_count++;
+                if(tusu_count>=4){
+                	console.log("선택끝");
+                	thrower_sel();
+                }
+      });
+         $('#4').on('click',function(){
+                tusu[3]=1;
+                tusu_count++;
+                if(tusu_count>=4){
+                	console.log("선택끝");
+                	thrower_sel();
+                }
+      });
+         $('#5').on('click',function(){
+                tusu[4]=1;
+                tusu_count++;
+                if(tusu_count>=4){
+                	console.log("선택끝");
+                	thrower_sel();
+                }
+      });
+         $('#6').on('click',function(){
+                tusu[5]=1;
+                tusu_count++;
+                if(tusu_count>=4){
+                	console.log("선택끝");
+                	thrower_sel();
+                }
+      });
+         $('#7').on('click',function(){
+                tusu[6]=1;
+                tusu_count++;
+                if(tusu_count>=4){
+                	console.log("선택끝");
+                	thrower_sel();
+                }
+      });
+         $('#8').on('click',function(){
+                tusu[7]=1;
+                tusu_count++;
+                if(tusu_count>=4){
+                	console.log("선택끝");
+                	thrower_sel();
+                }
+      });
+         $('#9').on('click',function(){
+                tusu[8]=1;
+                tusu_count++;
+                if(tusu_count>=4){
+                	console.log("선택끝");
+                	thrower_sel();
+                }
+      });
+         $('#10').on('click',function(){
+                tusu[9]=1;
+                tusu_count++;
+                if(tusu_count>=4){
+                	console.log("선택끝");
+                	thrower_sel();
+                }
+      });
+         $('#11').on('click',function(){
+                tusu[10]=1;
+                tusu_count++;
+                if(tusu_count>=4){
+                	console.log("선택끝");
+                	thrower_sel();
+                thrower_sel();
+                }
+      });
+      $('#12').on('click',function(){
+                tusu[11]=1;
+                tusu_count++;
+                if(tusu_count>=4){
+                	console.log("선택끝");
+                	thrower_sel();
+                	
+                }
+      });  
+
+	});
+	
+}
+function drawface(n) {
+  ctx = document.getElementById('canvas').getContext('2d');  
+  ctx.lineWidth = 5;
+  ctx.clearRect(dx,dy,dicewidth,diceheight);
+  ctx.strokeRect(dx,dy,dicewidth,diceheight)
+  var dotx;
+  var doty;
+  ctx.fillStyle = "#009966";
+	switch(n) {
+		case 1:
+		 draw1();
+		 break;
+		case 2:
+		 draw2();
+		 break;
+		case 3:
+		 draw2();
+		 draw1();
+		 break;
+		case 4:
+		 draw4();
+		 break;
+		case 5:
+		 draw4();
+		 draw1();
+		 break;
+		case 6:
+		 draw4();
+		 draw2mid();
+		 break;
+		
+	}
+}
+function draw1() {
+	var dotx;
+	var doty;
+	ctx.beginPath();
+	dotx = dx + .5*dicewidth;
+	doty = dy + .5*diceheight;
+	ctx.arc(dotx,doty,dotrad,0,Math.PI*2,true);
+	ctx.closePath();
+	ctx.fill();
+}
+function draw2() {
+	var dotx;
+	var doty;
+	ctx.beginPath();
+	dotx = dx + 3*dotrad;
+	doty = dy + 3*dotrad;
+	ctx.arc(dotx,doty,dotrad,0,Math.PI*2,true);
+	dotx = dx+dicewidth-3*dotrad;
+	doty = dy+diceheight-3*dotrad;
+	ctx.arc(dotx,doty,dotrad,0,Math.PI*2,true);
+	ctx.closePath();
+	ctx.fill();
+}
+function draw4() {
+	var dotx;
+	var doty;
+	ctx.beginPath();
+	dotx = dx + 3*dotrad;
+	doty = dy + 3*dotrad;
+	ctx.arc(dotx,doty,dotrad,0,Math.PI*2,true);
+	dotx = dx+dicewidth-3*dotrad;
+	doty = dy+diceheight-3*dotrad;
+	ctx.arc(dotx,doty,dotrad,0,Math.PI*2,true);
+	ctx.closePath();
+	ctx.fill();
+	ctx.beginPath();
+	dotx = dx + 3*dotrad;
+	doty = dy + diceheight-3*dotrad;  // 변동 없음
+	ctx.arc(dotx,doty,dotrad,0,Math.PI*2,true);
+	dotx = dx+dicewidth-3*dotrad;
+	doty = dy+ 3*dotrad;
+	ctx.arc(dotx,doty,dotrad,0,Math.PI*2,true);
+	ctx.closePath();
+	ctx.fill();	
+}
+function draw2mid() {
+	var dotx;
+	var doty;
+	ctx.beginPath();
+	dotx = dx + 3*dotrad;
+	doty = dy + .5*diceheight;
+	ctx.arc(dotx,doty,dotrad,0,Math.PI*2,true);
+	dotx = dx+dicewidth-3*dotrad;
+	doty = dy + .5*diceheight; // 변동 없음
+	ctx.arc(dotx,doty,dotrad,0,Math.PI*2,true);
+	ctx.closePath();
+	ctx.fill();
+}
+
+   $("#body").css({"background":"url(RYU.JPG)"});
+$("#base_img").css({"background":"url(base_image.JPG)"});
+
+            $(document).ready(function(){
+
+                $('#1').on('click',function(){
+                for(var i=0;i<=11;i++)
+                	tusu[i]=0;
+                 if(turn%2==0||turn==0)
+            	magu_count=magu_count_away;   
+                if(magu_count>=0){
+                tusu_count=tusu_count+3;
+            }
+
+                magu_count=magu_count-1;
+
+            if(turn%2==0||turn==0)
+            	magu_count_away=magu_count;
+            else
+            	magu_count_home=magu_count;
+
+      });
+      	   $('#2').on('click',function(){
+                tusu[1]=1;
+                tusu_count++;
+                if(tusu_count>=4){
+                	console.log("선택끝");
+                	thrower_sel();
+                }
+      });
+         $('#3').on('click',function(){
+                tusu[2]=1;
+                tusu_count++;
+                if(tusu_count>=4){
+                	console.log("선택끝");
+                	thrower_sel();
+                }
+      });
+         $('#4').on('click',function(){
+                tusu[3]=1;
+                tusu_count++;
+                if(tusu_count>=4){
+                	console.log("선택끝");
+                	thrower_sel();
+                }
+      });
+         $('#5').on('click',function(){
+                tusu[4]=1;
+                tusu_count++;
+                if(tusu_count>=4){
+                	console.log("선택끝");
+                	thrower_sel();
+                }
+      });
+         $('#6').on('click',function(){
+                tusu[5]=1;
+                tusu_count++;
+                if(tusu_count>=4){
+                	console.log("선택끝");
+                	thrower_sel();
+                }
+      });
+         $('#7').on('click',function(){
+                tusu[6]=1;
+                tusu_count++;
+                if(tusu_count>=4){
+                	console.log("선택끝");
+                	thrower_sel();
+                }
+      });
+         $('#8').on('click',function(){
+                tusu[7]=1;
+                tusu_count++;
+                if(tusu_count>=4){
+                	console.log("선택끝");
+                	thrower_sel();
+                }
+      });
+         $('#9').on('click',function(){
+                tusu[8]=1;
+                tusu_count++;
+                if(tusu_count>=4){
+                	console.log("선택끝");
+                	thrower_sel();
+                }
+      });
+         $('#10').on('click',function(){
+                tusu[9]=1;
+                tusu_count++;
+                if(tusu_count>=4){
+                	console.log("선택끝");
+                	thrower_sel();
+                }
+      });
+         $('#11').on('click',function(){
+                tusu[10]=1;
+                tusu_count++;
+                if(tusu_count>=4){
+                	console.log("선택끝");
+                	thrower_sel();
+                thrower_sel();
+                }
+      });
+      $('#12').on('click',function(){
+                tusu[11]=1;
+                tusu_count++;
+                if(tusu_count>=4){
+                	console.log("선택끝");
+                	thrower_sel();
+                	
+                }
+      });  
+     })   
+function thrower_sel(){
+	var j=0;
+	for(var i=0;i<=11;i++){
+		if(tusu[i]!=0){
+		 throw_sel[j]=(i+1);
+		 j++;
+		}
+	}
+	for(var i=0;i<=3;i++)
+		console.log(throw_sel[i]);
+	if(turn%2==0)
+		fourth_bat_count=fourth_bat_count_home;
+	if(turn%2==1)
+		fourth_bat_count=fourth_bat_count_away;
+	$("#body").css({"background":"url(SHOT.JPG)"});
+   $("#base_img").css({"background":"url(base_image.JPG)"});
+
+	$('#target').empty();
+	$('#target').append('<button id="swing">Swing!!</button></br><button id="fourth_swing">지명타자 : '+fourth_bat_count+'</button>').ready(function(){
+		$('#swing').on('click',function(){
+			console.log("슝");
+                fourth_bat_use=0;
+                tusudice();
+            
+
+      });
+      	   $('#fourth_swing').on('click',function(){
+      	   	console.log("슁");
+                fourth_bat_use=1;
+                fourth_bat_count--;
+
+                if(fourth_bat_count>=0){
+                	if(turn%2==0)
+						fourth_bat_count_home=fourth_bat_count;
+					if(turn%2==1)
+						fourth_bat_count_away=fourth_bat_count;
+                tusudice();
+            }
+      });
+     	});
+} 	  
+////////////////////////////////////////////////////////////////////////
+var bbase= new Array(3);
+var run= new Array(3);
+for(var i=0;i<=2;i++){
+	bbase[i]=0;
+	run[i]=0;
+}
+function base (flag){
+
+	if(flag==1){
+	if(bbase[2]==1){
+		bbase[2]=0;
+		score++;
+	}
+	if(bbase[1]==1){
+		bbase[2]=1;
+		bbase[1]=0;
+	}
+	if(bbase[0]==1){
+		bbase[1]=1;
+		bbase[0]=0;
+	}
+	bbase[0]=1;
+
+}
+if(flag==2){
+	if(bbase[2]==1){
+		bbase[2]=0;
+		score++;
+	}
+	if(bbase[1]==1){
+		bbase[1]=0;
+		score++;
+	}
+	if(bbase[0]==1){
+		bbase[2]=1;
+		bbase[0]=0;
+	}
+	bbase[1]=1;
+
+}
+if(flag==3){
+	if(bbase[2]==1){
+		bbase[2]=0;
+		score++;
+	}
+	if(bbase[1]==1){
+		bbase[1]=0;
+		score++;
+	}
+	if(bbase[0]==1){
+		
+		bbase[0]=0;
+		score++;
+	}
+	score++;
+
+}
+if(flag==0){
+
+	out_count++;
+	if(out_count>=3){
+		alert("삼진아웃!");
+		turn++;
+		score=0;
+		out_count=0;
+		bbase[0]=0;
+		bbase[1]=0;
+		bbase[2]=0;	
+		magu_over=0;
+	}
+}
+if(turn==0){
+	home_1=score;
+}
+if(turn==1){
+	away_1=score;
+}
+if(turn==2){
+	home_2=score;
+}
+if(turn==3){
+	away_2=score;
+}
+if(turn==4){
+	home_3=score;
+}
+if(turn==5){
+	away_3=score;
+}
+if(turn==6){
+	home_4=score;
+}
+if(turn==7){
+	away_4=score;
+}
+if(turn==8){
+	home_5=score;
+}
+if(turn==9){
+	away_5=score;
+}
+home_tot=home_1+home_2+home_3+home_4+home_5;
+away_tot=away_1+away_2+away_3+away_4+away_5;
+if(turn==10){
+	if(home_tot>away_tot){
+		alert(home_tot+":"+away_tot+"홈팀승!");
+		window.location.href = 'psil_dicex2.html';
+	}
+	if(home_tot<away_tot){		alert(home_tot+":"+away_tot+"원정팀승!");
+		window.location.href = 'psil_dicex2.html';
+	}
+	if(home_tot==away_tot){
+		alert(home_tot+":"+away_tot+"무승부!");
+		window.location.href = 'psil_dicex2.html';
+	}
+}
+console.log(bbase[0]);
+console.log(bbase[1]);
+console.log(bbase[2]);
+$('#1_2_3ru').empty();
+$('#1_2_3ru').append('<table border="0" width="100" height="100" style="background-image: url(base_image_1.jpg);" ><tr><td></td><td><div class= "relative_8" id="2_ru"></div><div class= "relative_9" id="3_ru"></div><div class= "relative_10" id="1_ru"></div></td><td></td></tr><tr><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td></tr></table>');
+if(bbase[2]==1){
+	$('#3_ru').empty();
+	$('#3_ru').append('<img src ="base_single.jpg" >');
+}
+else{
+	$('#3_ru').empty();
+}
+if(bbase[1]==1){
+	$('#2_ru').empty();
+	$('#2_ru').append('<img src ="base_single.jpg" >');
+}
+else{
+	$('#2_ru').empty();
+}
+
+if(bbase[0]==1){
+	$('#1_ru').empty();
+	$('#1_ru').append('<img src ="base_single.jpg" >');
+}
+else{
+	$('#1_ru').empty();
+}
+	$('#score_board').empty();
+	$('#score_board').append('<table border="3" style="background-color: white" ><tr><td></td><td>1회</td><td>2회</td><td>3회</td><td>4회</td><td>5회</td><td>합산점수</td></tr><tr><td>home팀</td><td>'+home_1+'</td><td>'+home_2+'</td><td>'+home_3+'</td><td>'+home_4+'</td><td>'+home_5+'</td><td>'+home_tot+'</td></tr><tr><td>away팀</td><td>'+away_1+'</td><td>'+away_2+'</td><td>'+away_3+'</td><td>'+away_4+'</td><td>'+away_5+'</td><td>'+away_tot+'</td></tr></table>');
+
+}
+        
+
+
+
+
+
+
+</script>
+</head>
+<body id="body"  style="background-image: url(RYU.JPG);">
+<div_K id="K">
+<div-back_1 id="back_1">
+<canvas id="canvas" width="400" height="300" style="margin-left:650;margin-top: 550; ">
+</canvas>
+
+</br>
+</div_dice>
+<br/>
+<div class="relative_4" id="status">
+	<table border="3" style="font-size:1em;background-color: white;">
+		<tr><td colspan="2">1회초 Home팀공격</td></tr>
+		<tr>
+		<td width="100">타격결과</td><td></td>
+	</tr>
+	<tr>
+		<td>아웃카운트</td><td>0out</td>
+	</tr>
+</table>
+	</div>
+<div class="relative" id="target">
+	<table border="3" width="150" height="200" style="font-size: 2em; color: white;">
+		<tr>
+			<td><input type=button style="width:30pt;height:30pt; background-color: rgba( 255, 255, 255, 0.5 );" value="★x3" id="1"></td>
+			<td><input type=button style="width:30pt;height:30pt; background-color: rgba( 255, 255, 255, 0.5 );" value="2" id="2"></td>
+			<td><input type=button style="width:30pt;height:30pt; background-color: rgba( 255, 255, 255, 0.5 );" value="3" id="3"></td>
+		</tr>
+		<tr>
+			<td><input type=button style="width:30pt;height:30pt; background-color: rgba( 255, 255, 255, 0.5 );" value="4" id="4"></td>
+			<td><input type=button style="width:30pt;height:30pt; background-color: rgba( 255, 255, 255, 0.5 );" value="5" id="5"></td>
+			<td><input type=button style="width:30pt;height:30pt; background-color: rgba( 255, 255, 255, 0.5 );" value="6" id="6"></td>
+		</tr><tr>
+			<td><input type=button style="width:30pt;height:30pt; background-color: rgba( 255, 255, 255, 0.5 );" value="7" id="7"></td>
+			<td><input type=button style="width:30pt;height:30pt; background-color: rgba( 255, 255, 255, 0.5 );" value="8" id="8"></td>
+			<td><input type=button style="width:30pt;height:30pt; background-color: rgba( 255, 255, 255, 0.5 );" value="9" id="9"></td>
+		</tr><tr>
+			<td><input type=button style="width:30pt;height:30pt; background-color: rgba( 255, 255, 255, 0.5 );" value="10" id="10"></td>
+			<td><input type=button style="width:30pt;height:30pt; background-color: rgba( 255, 255, 255, 0.5 );" value="11" id="11"></td>
+			<td><input type=button style="width:30pt;height:30pt; background-color: rgba( 255, 255, 255, 0.5 );" value="12" id="12"></td>
+		</tr>
+
+	</table>
+	
+
+</div>
+<div class="relative_7" id="base_img">
+	</div>
+<div class="relative_2" id="score_board">
+	
+<table border="3" style="background-color: white" id="score_board">
+
+	<tr>
+		<td></td><td>1회</td><td>2회</td><td>3회</td><td>4회</td><td>5회</td><td>합산점수</td>
+	</tr>
+	<tr><td>home팀</td><td>0</td><td></td><td></td><td></td><td></td><td></td></tr>
+	<tr><td>away팀</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+</table>
+
+</div>
+<div class="relative_3" id="1_2_3ru">
+
+<table border="0" width="100" height="100" style="background-image: url(base_image_1.jpg);" >
+
+	<tr><td></td><td>
+		<div class= "relative_8" id="2_ru">
+		
+	</div>
+		<div class= "relative_9" id="3_ru">
+		</div>
+		<div class= "relative_10" id="1_ru">
+		</div>
+		
+
+	</td><td></td></tr>
+
+	<tr><td></td><td></td><td></td></tr>
+
+	<tr><td></td><td></td><td></td></tr>
+</table>
+</div>
+
+</div-back_1>
+
+</div_K>
+</body>
+</html>
